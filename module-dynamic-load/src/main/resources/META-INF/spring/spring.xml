@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:webflow="http://www.springframework.org/schema/webflow-config"
+	xmlns:mdl="http://yunnex.com/schema/module-dynamic-loader-spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+         http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.0.xsd
+         http://yunnex.com/schema/module-dynamic-loader-spring http://yunnex.com/schema/module-dynamic-loader-spring.xsd"
+	default-autowire="byName">
+	<!-- 模块状态监听管理器 -->
+	<bean class="yunnex.mdl.support.SpringModuleStateChangeListenerManager" />
+	<!-- 模块业务服务管理器 -->
+	<bean id="moduleServiceImplementManager" class="yunnex.mdl.support.DefaultModuleServiceImplementManager" />
+	<!-- 模块管理器 -->
+	<bean class="yunnex.mdl.support.DefaultModuleManager" />
+	<!-- 模块加载器 -->
+	<bean class="yunnex.mdl.support.SpringModuleLoader" />
+	<!-- 上下文 -->
+	<bean class="yunnex.mdl.support.DefaultModuleContext" />
+
+	<!-- 模块业务工厂 -->
+	<bean id="moduleServiceFactory" class="yunnex.mdl.service.JDKProxyModuleServiceFactory">
+		<property name="moduleServiceImplementManager" ref="moduleServiceImplementManager"></property>
+		<property name="moduleServiceInvokerInterceptor">
+			<bean class="yunnex.mdl.service.CompositeModuleServiceInvokeInterceptor"></bean>
+		</property>
+	</bean>
+	
+	<mdl:container module-jar-location="classpath:META-INF/modules" module-interface-package="yunnex.game.service"/>
+	
+	<!-- 模块容器 -->
+<!-- 	<bean class="yunnex.mdl.support.SpringModuleContainer"> -->
+		<!-- 模块jar包所属文件夹路径 -->
+<!-- 		<property name="moduleJarDirPath" value="classpath:META-INF/modules"></property> -->
+		<!-- 接口路径 -->
+<!-- 		<property name="moduleServiceInterfacePackage" value="yunnex.game.service"></property> -->
+<!-- 	</bean> -->
+
+	<!-- 用于打印banner和输出当前所有安装模块 -->
+	<bean class="yunnex.mdl.listeners.DefaultModuleContainerListener"></bean>
+
+	<!-- 模块执行是日志打印拦截器 -->
+	<bean class="yunnex.mdl.service.interceptor.ModuleLoggerInterceptor" />
+
+</beans>
